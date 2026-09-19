@@ -1,0 +1,24 @@
+<Project>
+  <PropertyGroup>
+    <Company>The Melding Wars</Company>
+    <Product>Calldown</Product>
+    <Authors>The Melding Wars</Authors>
+    <Copyright>Copyright © 2026 The Melding Wars</Copyright>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <RepositoryType>git</RepositoryType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- Calldown expects PIN, RIN.WebAPI and SDBrowser to be checked out next to it -->
+    <TmwRoot Condition="'$(TmwRoot)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))\</TmwRoot>
+    <PinRoot Condition="'$(PinRoot)' == ''">$(TmwRoot)PIN\</PinRoot>
+    <RinRoot Condition="'$(RinRoot)' == ''">$(TmwRoot)RIN.WebAPI\</RinRoot>
+    <SDBrowserRoot Condition="'$(SDBrowserRoot)' == ''">$(TmwRoot)SDBrowser\</SDBrowserRoot>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.10.94">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>
