@@ -37,6 +37,8 @@ var pgUser = builder.AddParameter("pg-user", "tmwadmin");
 
 var postgres = builder
     .AddPostgres("postgres", userName: pgUser)
+    // Keep in sync with RIN.WebAPI/docker/docker-compose.yml
+    .WithImageTag("18.6-alpine")
     .WithDataVolume("calldown-postgres")
     .WithLifetime(ContainerLifetime.Persistent)
     .WithPgWeb(pgweb => pgweb.WithLifetime(ContainerLifetime.Persistent));
