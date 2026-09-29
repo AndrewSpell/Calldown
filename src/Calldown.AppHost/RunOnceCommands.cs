@@ -44,15 +44,12 @@ internal static class RunOnceCommands
         this IResourceBuilder<ProjectResource> collisionCache
     )
     {
-        // Normal runs skip an up-to-date cache, a rebuild leaves the flag out
-        var nextRun = collisionCache.WithNextRunFlag(flag =>
-            flag is null ? "--skip-if-current" : null
-        );
+        var nextRun = collisionCache.WithNextRunFlag(flag => flag);
 
         collisionCache.WithCommand(
             "rebuild-collision",
             "Rebuild collision cache",
-            ctx => nextRun.StartWith(ctx, "--rebuild"),
+            ctx => nextRun.StartWith(ctx, "--force"),
             new CommandOptions
             {
                 Description =
