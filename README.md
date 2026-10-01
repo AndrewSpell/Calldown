@@ -60,7 +60,8 @@ Set them in the AppHost's user secrets, e.g. `aspire secret set Parameters:zone-
 | Parameter       | Default          |                                                                      |
 |-----------------|------------------|----------------------------------------------------------------------|
 | `firefall-path` | detected install | Folder that contains `system\` and `firefall.ini`                    |
-| `zone-id`       | `448`            | Zone the game server loads and the collision cache is built for      |
+| `zone-id`       | `448`            | Default zone for characters without a last zone; the collision cache is built for it |
+| `preload-zones` | `1030`           | Comma separated zones hosted from startup. Other zones load on first use, and their collision cache is built then |
 | `collision`     | `zone+assets`    | `off`, `zone` or `zone+assets`. Changing it needs an AppHost restart |
 | `pg-user`       | `tmwadmin`       | Has to stay `tmwadmin`, RIN's schema assigns everything to that role |
 

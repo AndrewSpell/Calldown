@@ -22,7 +22,12 @@ var firefallPath = (
 );
 var firefall = firefallPath.Resource;
 
-var zoneId = builder.AddParameter("zone-id", "448").WithDescription("Zone the game server loads");
+var zoneId = builder
+    .AddParameter("zone-id", "448")
+    .WithDescription("Default zone of the game server, for characters without a last zone");
+var preloadZones = builder
+    .AddParameter("preload-zones", "1030")
+    .WithDescription("Comma separated zones the game server hosts from startup, other zones get loaded on first use");
 
 // Decides which resources exist, so it's read once at startup: off, zone or zone+assets
 var collision = CollisionScope.Parse(builder.Configuration["Parameters:collision"]);
@@ -114,6 +119,7 @@ var gameServer = builder
         ReferenceExpression.Create($"{firefall}\\system\\assetdb")
     )
     .WithEnvironment("GameServer__ZoneId", zoneId)
+    .WithEnvironment("GameServer__PreloadZones", preloadZones)
     .WithEnvironment("GameServer__LoadMapsCollision", collision.Enabled ? "true" : "false")
     .WithEnvironment("GameServer__LogOutputs", "Console")
     .WaitFor(rinInternal);
