@@ -22,7 +22,7 @@ The resources wait on each other in that order. So the Matrix server only hands 
 
 - .NET 10 SDK (the AppHost), plus the .NET 8 and 9 runtimes for RIN and PIN
 - An ASP.NET Core development certificate, i.e. `dotnet dev-certs https` once
-- Docker or a compatible runtime (e.g. Rancher Desktop) for Postgres
+- Docker or a compatible runtime for Postgres. On Windows, Rancher Desktop works well, while Podman 6 has issues with published ports on WSL
 - A Firefall 1962 client install - Calldown finds it through the `firefall://` handler or your Steam libraries
 - A client that bypasses RedHanded (e.g. patched with Arcporter)
 - The Aspire CLI is optional but handy: `dotnet tool install -g Aspire.Cli`
