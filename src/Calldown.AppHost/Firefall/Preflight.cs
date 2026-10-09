@@ -81,16 +81,26 @@ internal static class Preflight
 
         if (File.Exists(install.FirefallIni))
         {
-            var current = IniFile.GetValue(
-                File.ReadAllLines(install.FirefallIni),
-                "Config",
-                "OperatorHost"
-            );
+            var lines = File.ReadAllLines(install.FirefallIni);
+            var current = IniFile.GetValue(lines, "Config", "OperatorHost");
             if (!string.Equals(current, operatorHost, StringComparison.OrdinalIgnoreCase))
             {
                 yield return (
                     "Client points elsewhere",
                     $"firefall.ini uses OperatorHost '{current}'. Run 'Configure client' on the firefall resource to use {operatorHost}.",
+                    MessageIntent.Information
+                );
+            }
+            else if (
+                StreamingAssets
+                    .IniValues(operatorHost)
+                    .Any(v => IniFile.GetValue(lines, "FilePaths", v.Key) != v.Value)
+            )
+            {
+                yield return (
+                    "Streaming assets from dl.firefall.com",
+                    "firefall.ini still streams the virtual texture and the dialogue banks from the dead dl.firefall.com. "
+                        + "Run 'Configure client' on the firefall resource to get them from RIN's drop folder.",
                     MessageIntent.Information
                 );
             }

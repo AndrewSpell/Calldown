@@ -64,12 +64,13 @@ Set them in the AppHost's user secrets, e.g. `aspire secret set Parameters:zone-
 | `preload-zones` | `1030`           | Comma separated zones hosted from startup. Other zones load on first use, and their collision cache is built then |
 | `collision`     | `zone+assets`    | `off`, `zone` or `zone+assets`. Changing it needs an AppHost restart |
 | `pg-user`       | `tmwadmin`       | Has to stay `tmwadmin`, RIN's schema assigns everything to that role |
+| `streaming-assets-path` | `%LocalAppData%\Calldown\streaming-assets` | Drop folder RIN serves in place of `dl.firefall.com`, see [Streaming Assets](#streaming-assets) |
 
 ## Dashboard Commands
 
 | Resource          | Command                 |                                                                                                                                                                           |
 |-------------------|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `firefall`        | Configure client        | Sets `OperatorHost` in `firefall.ini` to `https://localhost:5001` and patches `FirefallClient.exe` to bypass RedHanded, keeps the originals with a `.calldown.bak` suffix |
+| `firefall`        | Configure client        | Sets `OperatorHost` in `firefall.ini` to `https://localhost:5001`, streams assets from RIN instead of `dl.firefall.com` and patches `FirefallClient.exe` to bypass RedHanded, keeps the originals with a `.calldown.bak` suffix |
 | `firefall`        | Client options          | Screen mode and a key to leave a vehicle                                                                                                                                  |
 | `firefall`        | Restore client          | Puts the backups back, the unpatched client included                                                                                                                      |
 | `rin-webapi`      | Create account          | Registers an account with email, password and country                                                                                                                     |
@@ -78,6 +79,23 @@ Set them in the AppHost's user secrets, e.g. `aspire secret set Parameters:zone-
 | `collision-cache` | Rebuild collision cache | Regenerates the cache even if it looks current                                                                                                                            |
 
 All of them also work from the terminal, e.g. `aspire resource rin-webapi create-account --email me@example.com --password hunter22 --country US`.
+
+## Streaming Assets
+
+The installer didn't ship everything, the client streamed the rest from `dl.firefall.com` with HTTP range requests:
+
+- the three finest levels of the virtual texture (`system\vt\static.vtex0` to `2`, about 25 GB), streamed only where the install lacks them
+- the dialogue media banks listed in `dbsounddata::SoundStreamingAsset`, the client has no other source for those voice lines
+
+RIN serves the `streaming-assets-path` folder at `https://localhost:5001/dl`, and "Configure client" points `VTRemotePath` and `AssetStreamPath` in `firefall.ini` at it. Drop the files in with this layout:
+
+```
+streaming-assets\
+  vtex\static.vtex0                    any level the install lacks, the files as they are in system\vt
+  AssetStream\00180000\00180091.bnk    complete media banks, <id rounded down to 1000, 8 digits>\<id, 8 digits>.bnk
+```
+
+The client reads the offsets from its own `static.vtex_idx` and from the `_Event` banks, so the files have to be the ones of build 1962. A missing file is a 404. `Firefall-Client-Cache.md` in the workspace root describes what the player caches still hold of the banks.
 
 ## Ports
 

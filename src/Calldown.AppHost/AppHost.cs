@@ -37,6 +37,12 @@ builder
         "Collision pre-generation: off, zone or zone+assets. Set it in user secrets and restart the AppHost to change it."
     );
 
+var streamingAssets = builder
+    .AddParameter("streaming-assets-path", StreamingAssets.DefaultPath)
+    .WithDescription(
+        "Drop folder RIN serves in place of dl.firefall.com: vtex\\static.vtex<N> and AssetStream\\<block>\\<id>.bnk"
+    );
+
 // RIN's schema dump assigns every object to tmwadmin, so the role has to exist
 var pgUser = builder.AddParameter("pg-user", "tmwadmin");
 
@@ -81,6 +87,7 @@ var rinWebApi = builder
     .WithEnvironment("DBConnConfig__SDBConnStr", sdbDb)
     .WithEnvironment("DevServer__EnableLocalDev", "true")
     .WithEnvironment("DevServer__DevGameServerURL", "localhost:" + MatrixPort)
+    .WithEnvironment("WebApiConfig__StreamingAssetsPath", streamingAssets)
     .WithHttpHealthCheck("/health", endpointName: "https")
     .WaitForCompletion(dbSetup);
 

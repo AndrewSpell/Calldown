@@ -184,8 +184,13 @@ internal static class FirefallClient
             var lines = File.ReadAllLines(install.FirefallIni).ToList();
             lines = IniFile.SetValue(lines, "Config", "OperatorHost", $"\"{operatorHost}\"");
             lines = IniFile.SetValue(lines, "UI", "PlayIntroMovie", "false");
+            foreach (var (key, value) in StreamingAssets.IniValues(operatorHost))
+            {
+                lines = IniFile.SetValue(lines, "FilePaths", key, $"\"{value}\"");
+            }
+
             File.WriteAllLines(install.FirefallIni, lines);
-            logger.LogInformation("Set OperatorHost to {OperatorHost}", operatorHost);
+            logger.LogInformation("Set OperatorHost and the streaming asset paths to {OperatorHost}", operatorHost);
         }
         catch (UnauthorizedAccessException)
         {
