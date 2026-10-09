@@ -41,9 +41,8 @@ internal static class SdbImport
         await state.ClearAsync(Step);
         await dataSource.ExecuteAsync($"DROP SCHEMA IF EXISTS {Schema} CASCADE;");
 
-        var sdb = new StaticDB();
-        sdb.Read(sdbPath);
-        Log.Info($"Read {sdb.Tables.Count} tables (patch {sdb.Patch})");
+        using var sdb = StaticDBView.Open(sdbPath);
+        Log.Info($"Read {sdb.Count} tables (patch {sdb.Patch})");
 
         var names = SdbNames.LoadDefault();
         var importConnStr = new NpgsqlConnectionStringBuilder(connStr)
