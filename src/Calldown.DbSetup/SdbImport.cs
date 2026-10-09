@@ -55,7 +55,7 @@ internal static class SdbImport
             importConnStr,
             Schema,
             sdb,
-            names.GetTableOrFieldName,
+            names.GetName,
             (msg, error) =>
             {
                 // The importer logs every executed statement, which buries the useful lines
