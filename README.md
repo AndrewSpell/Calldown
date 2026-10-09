@@ -92,10 +92,13 @@ RIN serves the `streaming-assets-path` folder at `https://localhost:5001/dl`, an
 ```
 streaming-assets\
   vtex\static.vtex0                    any level the install lacks, the files as they are in system\vt
-  AssetStream\00180000\00180091.bnk    complete media banks, <id rounded down to 1000, 8 digits>\<id, 8 digits>.bnk
+  AssetStream\00180000\00180091.bnk    media banks, <id rounded down to 1000, 8 digits>\<id, 8 digits>.bnk
+  AssetStream\00180000\00180091.bnk_ac for a partial bank, the ranges it holds
 ```
 
-The client reads the offsets from its own `static.vtex_idx` and from the `_Event` banks, so the files have to be the ones of build 1962. A missing file is a 404. `Firefall-Client-Cache.md` in the workspace root describes what the player caches still hold of the banks.
+The client reads the offsets from its own `static.vtex_idx` and from the `_Event` banks, so the files have to be the ones of build 1962. A missing file is a 404.
+
+No complete copy of the dialogue banks is known. The banks merged from the player caches in the library hold about a third of 1962's voice lines, each with a `.bnk_ac` in the client cache's format. RIN answers requests outside those ranges with a 404, so the client never gets the gaps as audio. `Firefall-Client-Cache.md` in the workspace root describes the caches and the merge.
 
 ## Ports
 
