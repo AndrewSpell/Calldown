@@ -55,7 +55,7 @@ Parameters, ports and the dashboard commands are documented in `README.md`.
 1. **Skeleton** - done. AppHost with Postgres, `db-setup` for schema and seeds, both RIN services.
 2. **Headless SDB** - done. The import moved out of SDBrowser's WinForms code into a UI-free library that `db-setup` references.
 3. **PIN in the graph** - done. Configurable ports, the health endpoints, the collision cache resource and the full ordering.
-4. **Client** - done. Install discovery, `firefall.ini` handling with backups, the RedHanded check, preflight notifications, and the Configure, Restore and Create account commands. The TLS question is answered, see [TLS](#tls). Remnant's TF369 auto-login still isn't wired up, but that's convenience, not a blocker.
+4. **Client** - done. Install discovery, `firefall.ini` handling with backups, the RedHanded check and patch through FauFau's `RedHandedBypass`, preflight notifications, and the Configure, Restore and Create account commands. The TLS question is answered, see [TLS](#tls). Remnant's TF369 auto-login still isn't wired up, but that's convenience, not a blocker.
 5. **Observability** - half. RIN has health checks and OpenTelemetry, PIN exports its logs the same way. PIN has no metrics and no gRPC client tracing, so its Traces tab stays empty.
 6. **Docs** - half. `README.md` is written and `OVERVIEW.md` mentions Calldown. The wiki page "Running a server with Calldown" isn't written.
 
@@ -102,7 +102,7 @@ Open: whether the branch should be retargeted from `net9.0-windows` to `net10.0-
 - **Seq.** PIN's Serilog setup has a Seq sink with a `controlLevelSwitch`, which lets you raise a running server's log level from Seq's UI. The dashboard has no equivalent and keeps its telemetry in memory, so restarting the AppHost throws the logs away. An opt-in `AddSeq("seq").WithDataVolume()` resource next to the OpenTelemetry export would cover both, off by default so a plain `aspire run` needs no extra container. Note that Seq ingests OTLP logs and traces, but has no metrics endpoint, so it can't be the only backend.
 - **Account creation** through the real client UI, see the RIN item above. Fixing it also lets the dashboard command drop the DEBUG-only `DevTestController` route.
 - **Preflight** currently checks the install, the RedHanded state and `firefall.ini`. Docker not running, a port already in use and the development certificate aren't checked yet. The certificate check is about it existing at all, Kestrel needs one to serve HTTPS, not about it being trusted, see [TLS](#tls).
-- **Patching the client** writes into the install folder. Under `Program Files` that needs write access, and the command should say so rather than fail quietly.
+- **Patching the client** writes into the install folder. "Configure client" says so when it lacks write access or the running client holds the exe, rather than failing quietly. The patch is built for 1962 only, other builds report a missing pattern and stay untouched.
 
 ## TLS
 

@@ -82,7 +82,7 @@ internal static class FirefallClient
                 new CommandOptions
                 {
                     Description =
-                        $"Points {install.FirefallIni} at this stack's RIN.WebAPI. The original file is kept as firefall.ini{BackupSuffix}",
+                        $"Points {install.FirefallIni} at this stack's RIN.WebAPI and patches FirefallClient.exe to bypass RedHanded. The original files are kept with a {BackupSuffix} suffix",
                     IconName = "Settings",
                     IsHighlighted = true,
                 }
@@ -102,12 +102,12 @@ internal static class FirefallClient
             )
             .WithCommand(
                 "restore-client",
-                "Restore client config",
+                "Restore client",
                 ctx => Task.FromResult(Restore(install, ctx.Logger)),
                 new CommandOptions
                 {
                     Description =
-                        "Puts back the files from before 'Configure client' and 'Client options'",
+                        "Puts back the files from before 'Configure client' and 'Client options', including the unpatched FirefallClient.exe",
                     IconName = "ArrowUndo",
                     UpdateState = OnlyWhileStopped,
                 }
@@ -200,13 +200,46 @@ internal static class FirefallClient
         return redHanded switch
         {
             RedHandedState.Patched => CommandResults.Success($"Client now uses {operatorHost}"),
-            RedHandedState.Unpatched => CommandResults.Failure(
-                $"Client now uses {operatorHost}, but FirefallClient.exe still runs RedHanded. Patch it with Arcporter before launching."
-            ),
+            RedHandedState.Unpatched => PatchRedHanded(install, operatorHost, logger),
             _ => CommandResults.Success(
                 $"Client now uses {operatorHost}. Couldn't tell whether FirefallClient.exe bypasses RedHanded."
             ),
         };
+    }
+
+    private static ExecuteCommandResult PatchRedHanded(
+        FirefallInstall install,
+        string operatorHost,
+        ILogger logger
+    )
+    {
+        try
+        {
+            Backup(install.ClientExe, logger);
+
+            var result = RedHandedPatch.Apply(install.ClientExe);
+            if (!result.Success)
+            {
+                return CommandResults.Failure(
+                    $"Client now uses {operatorHost}, but FirefallClient.exe couldn't be patched to bypass RedHanded: {result.Message}"
+                );
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return CommandResults.Failure(
+                $"Client now uses {operatorHost}, but there's no write access to {install.BinDir} to patch out RedHanded. Give your user write access to that folder, or run the AppHost elevated."
+            );
+        }
+        catch (IOException e)
+        {
+            return CommandResults.Failure(
+                $"Client now uses {operatorHost}, but FirefallClient.exe couldn't be patched to bypass RedHanded, close the client and try again: {e.Message}"
+            );
+        }
+
+        logger.LogInformation("Patched {Exe} to bypass RedHanded", install.ClientExe);
+        return CommandResults.Success($"Client now uses {operatorHost} and bypasses RedHanded");
     }
 
     private static ExecuteCommandResult ApplyOptions(
@@ -301,7 +334,13 @@ internal static class FirefallClient
         try
         {
             foreach (
-                var file in new[] { install.FirefallIni, install.SettingsCon, install.Keybinds }
+                var file in new[]
+                {
+                    install.FirefallIni,
+                    install.ClientExe,
+                    install.SettingsCon,
+                    install.Keybinds,
+                }
             )
             {
                 var backup = file + BackupSuffix;

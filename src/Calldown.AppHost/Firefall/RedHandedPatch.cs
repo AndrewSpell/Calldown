@@ -1,3 +1,6 @@
+using FauFau.Hax;
+using FauFau.Hax.Patches;
+
 namespace Calldown.AppHost.Firefall;
 
 internal enum RedHandedState
@@ -51,5 +54,18 @@ internal static class RedHandedPatch
         }
 
         return data.IndexOf(Original) != -1 ? RedHandedState.Unpatched : RedHandedState.Unknown;
+    }
+
+    // Applies FauFau's bypass in place, the file stays untouched when one of its patterns is missing
+    public static PatchResult Apply(string exePath)
+    {
+        var patcher = new Patcher(exePath);
+        var result = patcher.ApplyPatch(new RedHandedBypass());
+        if (result.Success)
+        {
+            File.WriteAllBytes(exePath, patcher.FileData);
+        }
+
+        return result;
     }
 }

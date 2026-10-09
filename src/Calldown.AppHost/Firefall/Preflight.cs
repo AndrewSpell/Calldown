@@ -74,7 +74,7 @@ internal static class Preflight
         {
             yield return (
                 "RedHanded not bypassed",
-                $"{install.ClientExe} still runs the RedHanded anti-cheat and won't start. Patch it with Arcporter.",
+                $"{install.ClientExe} still runs the RedHanded anti-cheat and won't start. Run 'Configure client' on the firefall resource, it patches the client.",
                 MessageIntent.Warning
             );
         }

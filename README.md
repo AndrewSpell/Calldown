@@ -24,7 +24,7 @@ The resources wait on each other in that order. So the Matrix server only hands 
 - An ASP.NET Core development certificate, i.e. `dotnet dev-certs https` once
 - Docker or a compatible runtime for Postgres. On Windows, Rancher Desktop works well, while Podman 6 has issues with published ports on WSL
 - A Firefall 1962 client install - Calldown finds it through the `firefall://` handler or your Steam libraries
-- A client that bypasses RedHanded (e.g. patched with Arcporter)
+- Write access to the install folder, "Configure client" edits `firefall.ini` and patches `FirefallClient.exe` to bypass RedHanded
 - The Aspire CLI is optional but handy: `dotnet tool install -g Aspire.Cli`
 
 The repos are expected as siblings:
@@ -67,15 +67,15 @@ Set them in the AppHost's user secrets, e.g. `aspire secret set Parameters:zone-
 
 ## Dashboard Commands
 
-| Resource          | Command                 |                                                                                                                      |
-|-------------------|-------------------------|----------------------------------------------------------------------------------------------------------------------|
-| `firefall`        | Configure client        | Sets `OperatorHost` in `firefall.ini` to `https://localhost:5001`, keeps the original as `firefall.ini.calldown.bak` |
-| `firefall`        | Client options          | Screen mode and a key to leave a vehicle                                                                             |
-| `firefall`        | Restore client config   | Puts the backups back                                                                                                |
-| `rin-webapi`      | Create account          | Registers an account with email, password and country                                                                |
-| `db-setup`        | Re-import SDB           | Imports `clientdb.sd2` again                                                                                         |
-| `db-setup`        | Reset database          | Drops everything, accounts and characters included, and sets it up from scratch                                      |
-| `collision-cache` | Rebuild collision cache | Regenerates the cache even if it looks current                                                                       |
+| Resource          | Command                 |                                                                                                                                                                           |
+|-------------------|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `firefall`        | Configure client        | Sets `OperatorHost` in `firefall.ini` to `https://localhost:5001` and patches `FirefallClient.exe` to bypass RedHanded, keeps the originals with a `.calldown.bak` suffix |
+| `firefall`        | Client options          | Screen mode and a key to leave a vehicle                                                                                                                                  |
+| `firefall`        | Restore client          | Puts the backups back, the unpatched client included                                                                                                                      |
+| `rin-webapi`      | Create account          | Registers an account with email, password and country                                                                                                                     |
+| `db-setup`        | Re-import SDB           | Imports `clientdb.sd2` again                                                                                                                                              |
+| `db-setup`        | Reset database          | Drops everything, accounts and characters included, and sets it up from scratch                                                                                           |
+| `collision-cache` | Rebuild collision cache | Regenerates the cache even if it looks current                                                                                                                            |
 
 All of them also work from the terminal, e.g. `aspire resource rin-webapi create-account --email me@example.com --password hunter22 --country US`.
 
