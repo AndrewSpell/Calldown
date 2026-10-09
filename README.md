@@ -94,11 +94,15 @@ streaming-assets\
   vtex\static.vtex0                    any level the install lacks, the files as they are in system\vt
   AssetStream\00180000\00180091.bnk    media banks, <id rounded down to 1000, 8 digits>\<id, 8 digits>.bnk
   AssetStream\00180000\00180091.bnk_ac for a partial bank, the ranges it holds
+  ingame\panelmanager.html             the in-game web UI page, served at /ingame/panelmanager
+  ingame\assets\...                    its scripts, styles, fonts and the item icons, served at /ingame/assets
 ```
 
 The client reads the offsets from its own `static.vtex_idx` and from the `_Event` banks, so the files have to be the ones of build 1962. A missing file is a 404.
 
 No complete copy of the dialogue banks is known. The banks merged from the player caches in the library hold about a third of 1962's voice lines, each with a `.bnk_ac` in the client cache's format. RIN answers requests outside those ranges with a 404, so the client never gets the gaps as audio. `Firefall-Client-Cache.md` in the workspace root describes the caches and the merge.
+
+The client also loads its web UI, the panel manager, from RIN's `/ingame` host. The `ingame` folder holds the 1962 page from the library's browser caches, with the New Relic tracking removed and its urls moved under `/ingame`, and the assets of the library's 2016 crawl of the in-game host. The page's panels call `/ingame/api/...`, which RIN mostly doesn't implement yet.
 
 ## Ports
 
